@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS employees (
   updated_at timestamptz NULL,
   "version" int8 NOT NULL,
   is_active bool NOT NULL DEFAULT TRUE,
+  deleted_at timestamptz NULL,
   CONSTRAINT employees_pk PRIMARY KEY (id)
  );
  

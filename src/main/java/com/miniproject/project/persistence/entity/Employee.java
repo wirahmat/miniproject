@@ -2,6 +2,9 @@ package com.miniproject.project.persistence.entity;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -20,6 +23,8 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE employees SET deleted_at = now() WHERE id=? AND version =?")
+@SQLRestriction("deleted_at IS NULL")
 public class Employee extends MasterEntity{
 
 	@Column(name = "nik", nullable = false)

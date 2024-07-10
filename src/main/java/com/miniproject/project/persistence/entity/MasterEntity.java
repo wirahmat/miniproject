@@ -8,10 +8,12 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 
+@MappedSuperclass
 @Getter
 @Setter
 public class MasterEntity {
@@ -33,4 +35,6 @@ public class MasterEntity {
 	@Version
 	private Long version;
 
+	@Column(name = "deleted_at")
+	private ZonedDateTime deletedAt;
 }
