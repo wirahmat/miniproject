@@ -1,6 +1,4 @@
-package com.miniproject.project.common.model.request.inventory;
-
-import java.time.LocalDate;
+package com.miniproject.project.common.model.request.commodity;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,26 +11,26 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateInventoryRequest {
-
+public class UpdateCommodityRequest {
+	
 	@NotBlank
 	private String id;
 
 	@NotNull
 	private Long version;
 
-	private String itemCode;
-
-	private String itemName;
-
-	private LocalDate lastMaintenance;
-
-	private Boolean isRemindedMaintenance;
-
-	private Integer month;
+	private String code;
+	
+	private String name;
+	
+	private String description;
+	
+	private Integer restockWhen;
+	
+	private Integer quantity;
 
 	private String itemCategoryId;
 	
 	private Boolean isActive;
-
+	
 }

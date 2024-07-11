@@ -32,5 +32,5 @@ CREATE TABLE IF NOT EXISTS inventories (
   CONSTRAINT inventories_fk_category FOREIGN KEY(item_category_id) REFERENCES categories(id) 
  );
  
- CREATE UNIQUE INDEX IF NOT EXISTS employees_un
+ CREATE UNIQUE INDEX IF NOT EXISTS inventories_un
   ON inventories(item_code);

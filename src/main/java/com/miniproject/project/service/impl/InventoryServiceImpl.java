@@ -1,11 +1,13 @@
 package com.miniproject.project.service.impl;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.miniproject.project.common.model.request.inventory.CreateInventoryRequest;
@@ -33,6 +35,7 @@ public class InventoryServiceImpl implements InventoryService{
 					"inventory id is not found ");
 		}
 	}
+	
 	@Override
 	public void validateIdActive(String id) {
 		Inventory inventory = getEntityById(id)
@@ -43,13 +46,15 @@ public class InventoryServiceImpl implements InventoryService{
 					"inventory is not active");
 		}
 	}
+	
 	@Override
 	public void validateBkNotExist(String itemCode) {
 		if (repo.existsByItemCode(itemCode)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"inventory with same nik and number phone is exists ");
+					"inventory with same code is exists ");
 		}
 	}
+	
 	@Override
 	public void validateVersion(String id, Long version) {
 		Inventory inventory = getEntityById(id)
@@ -59,39 +64,49 @@ public class InventoryServiceImpl implements InventoryService{
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "inventory version does not matched");
 		}
 	}
+	
 	@Override
 	public List<InventoryResponse> getAll() {
 		List<Inventory> inventories = repo.findAll();
 		List<InventoryResponse> inventoryResponse = inventories.stream().map(this::mapToResponse).toList();
 		return inventoryResponse;
 	}
+	
 	@Override
 	public Optional<Inventory> getEntityById(String id) {
 		return repo.findById(id);
 	}
+	
 	@Override
 	public Inventory getValidatedEntityById(String id) {
 		return getEntityById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 				"inventory is not exists"));
 	}
+	
 	@Override
 	public InventoryResponse getById(String id) {
 		Inventory inventory = getValidatedEntityById(id);
 		return mapToResponse(inventory);
 	}
+	
 	@Override
+	@Transactional
 	public void add(CreateInventoryRequest data) {
 		validateBkNotExist(data.getItemCode());
 		
 		Inventory inventory = new Inventory();
 		BeanUtils.copyProperties(data, inventory);
 		
+		inventory.setRegisteredDate(LocalDate.now());
+		
 		Category category = getActiveCategory(data.getItemCategoryId());
 		inventory.setItemCategory(category);
 		
 		repo.save(inventory);
 	}
+	
 	@Override
+	@Transactional
 	public void edit(UpdateInventoryRequest data) {
 		validateIdExist(data.getId());
 		Inventory inventory = getValidatedEntityById(data.getId());
@@ -105,11 +120,15 @@ public class InventoryServiceImpl implements InventoryService{
 		
 		repo.saveAndFlush(inventory);
 	}
+	
 	@Override
+	@Transactional
 	public void delete(String id) {
 		repo.deleteById(id);
 	}
+	
 	@Override
+	@Transactional
 	public void delete(List<String> ids) {
 		for(String id : ids) {
 			delete(id);
@@ -133,6 +152,12 @@ public class InventoryServiceImpl implements InventoryService{
 	private InventoryResponse mapToResponse(Inventory inventory) {
 		InventoryResponse inventoryResponse = new InventoryResponse();
 		BeanUtils.copyProperties(inventory, inventoryResponse);
+		
+		Category itemCategory = inventory.getItemCategory();
+		inventoryResponse.setItemCategoryId(itemCategory.getId());
+		inventoryResponse.setItemCategoryCode(itemCategory.getCode());
+		inventoryResponse.setItemCategoryName(itemCategory.getName());
+		
 		
 		return inventoryResponse;
 	}

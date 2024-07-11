@@ -23,8 +23,6 @@ public class CreateInventoryRequest {
 
 	private Integer month;
 	
-	private LocalDate registeredDate;
-	
 	private String itemCategoryId;
 	
 	private Boolean isActive;
